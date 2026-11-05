@@ -2,6 +2,8 @@
 
 Aplicação web que recebe uma nota fiscal em **PDF**, usa **IA de visão** (API gratuita do Google Gemini) para ler os dados e grava tudo de forma estruturada em um banco **SQL**.
 
+**Demo online:** https://leitor-notas-k2en.onrender.com — use os botões de nota fictícia. O plano gratuito "dorme" após 15 min sem uso; o primeiro acesso pode levar cerca de 1 minuto.
+
 Campos extraídos: **empresa emitente, CNPJ, valor total, data de emissão e data de vencimento.**
 
 ## Como funciona
