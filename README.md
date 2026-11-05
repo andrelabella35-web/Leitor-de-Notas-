@@ -18,6 +18,7 @@ PDF ──► API Gemini (lê o PDF inteiro) ──► validação/normalizaçã
 2. O servidor manda o PDF ao Gemini com um prompt que exige resposta em JSON.
 3. A resposta passa por uma camada de **validação e normalização** (abaixo).
 4. O registro é salvo no banco e aparece na tabela da página.
+5. O botão **Baixar planilha Excel** (`GET /api/notas.xlsx`) exporta as notas lidas para um `.xlsx` (`exportar.py`, sem dependências extras). No demo, cada visitante baixa só as próprias notas.
 
 ### Validação e normalização
 
@@ -57,7 +58,7 @@ GEMINI_API_KEY=sua-chave python3 app.py     # http://localhost:8000
 python3 -m unittest discover -s tests
 ```
 
-31 testes, sem internet e sem chave de API: validação de CNPJ/datas/valores, limitador de uso, banco (incluindo migração e isolamento por visitante), o formato da requisição ao Gemini (contra um servidor falso) e a API de ponta a ponta.
+38 testes, sem internet e sem chave de API: validação de CNPJ/datas/valores, limitador de uso, banco (incluindo migração e isolamento por visitante), o formato da requisição ao Gemini (contra um servidor falso) e a API de ponta a ponta.
 
 ## Publicar o demo (gratuito)
 

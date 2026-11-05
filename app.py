@@ -15,6 +15,7 @@ from urllib.parse import unquote
 
 import banco
 import config
+import exportar
 import motores
 from dados import normalizar
 from limites import Limitador
@@ -83,6 +84,10 @@ class Handler(BaseHTTPRequestHandler):
             self._enviar(200, (config.BASE / "samples" / m.group(1)).read_bytes(), "application/pdf")
         elif self.path == "/api/notas":
             self._json(banco.listar(sid if config.MODO_DEMO else None))
+        elif self.path == "/api/notas.xlsx":
+            xlsx = exportar.gerar_xlsx(banco.listar(sid if config.MODO_DEMO else None))
+            self._enviar(200, xlsx, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         (("Content-Disposition", 'attachment; filename="notas.xlsx"'),) + tuple(self._cookie_novo()))
         else:
             self._json({"erro": "não encontrado"}, 404)
 
