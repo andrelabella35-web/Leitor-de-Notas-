@@ -1,0 +1,212 @@
+{
+  "modelo": "qwen2.5vl:3b",
+  "notas": 12,
+  "acertos": {
+    "empresa": 12,
+    "cnpj": 12,
+    "valor_total": 12,
+    "data_emissao": 12,
+    "data_vencimento": 12
+  },
+  "nao_lidos": {
+    "empresa": 0,
+    "cnpj": 0,
+    "valor_total": 0,
+    "data_emissao": 0,
+    "data_vencimento": 0
+  },
+  "detalhes": {
+    "nota_01.pdf": {
+      "lido": {
+        "empresa": "Padaria Sol Nascente LTDA",
+        "cnpj": "10.433.218/0001-93",
+        "valor_total": 567.16,
+        "data_emissao": "2026-02-19",
+        "data_vencimento": "2026-03-14"
+      },
+      "esperado": {
+        "empresa": "Padaria Sol Nascente LTDA",
+        "cnpj": "10.433.218/0001-93",
+        "valor_total": 567.16,
+        "data_emissao": "2026-02-19",
+        "data_vencimento": "2026-03-14"
+      }
+    },
+    "nota_02.pdf": {
+      "lido": {
+        "empresa": "Mecânica Três Irmãos ME",
+        "cnpj": "08.386.379/0001-21",
+        "valor_total": 898.89,
+        "data_emissao": "2026-05-26",
+        "data_vencimento": "2026-06-28"
+      },
+      "esperado": {
+        "empresa": "Mecânica Três Irmãos ME",
+        "cnpj": "08.386.379/0001-21",
+        "valor_total": 898.89,
+        "data_emissao": "2026-05-26",
+        "data_vencimento": "2026-06-28"
+      }
+    },
+    "nota_03.pdf": {
+      "lido": {
+        "empresa": "Clínica Vida Plena S/S",
+        "cnpj": "35.116.155/0001-72",
+        "valor_total": 581.22,
+        "data_emissao": "2026-10-09",
+        "data_vencimento": "2026-11-26"
+      },
+      "esperado": {
+        "empresa": "Clínica Vida Plena S/S",
+        "cnpj": "35.116.155/0001-72",
+        "valor_total": 581.22,
+        "data_emissao": "2026-10-09",
+        "data_vencimento": "2026-11-26"
+      }
+    },
+    "nota_04.pdf": {
+      "lido": {
+        "empresa": "Papelaria Folha Branca EIRELI",
+        "cnpj": "49.593.103/0001-00",
+        "valor_total": 933.91,
+        "data_emissao": "2026-05-03",
+        "data_vencimento": "2026-06-28"
+      },
+      "esperado": {
+        "empresa": "Papelaria Folha Branca EIRELI",
+        "cnpj": "49.593.103/0001-00",
+        "valor_total": 933.91,
+        "data_emissao": "2026-05-03",
+        "data_vencimento": "2026-06-28"
+      }
+    },
+    "nota_05.pdf": {
+      "lido": {
+        "empresa": "Auto Peças Horizonte LTDA",
+        "cnpj": "52.553.419/0001-74",
+        "valor_total": 1317.57,
+        "data_emissao": "2026-03-18",
+        "data_vencimento": "2026-04-24"
+      },
+      "esperado": {
+        "empresa": "Auto Peças Horizonte LTDA",
+        "cnpj": "52.553.419/0001-74",
+        "valor_total": 1317.57,
+        "data_emissao": "2026-03-18",
+        "data_vencimento": "2026-04-24"
+      }
+    },
+    "nota_06.pdf": {
+      "lido": {
+        "empresa": "Studio Luz e Forma ME",
+        "cnpj": "83.503.056/0001-96",
+        "valor_total": 958.03,
+        "data_emissao": "2026-05-03",
+        "data_vencimento": "2026-06-07"
+      },
+      "esperado": {
+        "empresa": "Studio Luz e Forma ME",
+        "cnpj": "83.503.056/0001-96",
+        "valor_total": 958.03,
+        "data_emissao": "2026-05-03",
+        "data_vencimento": "2026-06-07"
+      }
+    },
+    "nota_07.pdf": {
+      "lido": {
+        "empresa": "Restaurante Sabor da Serra LTDA",
+        "cnpj": "88.496.965/0001-68",
+        "valor_total": 1556.62,
+        "data_emissao": "2026-04-05",
+        "data_vencimento": "2026-05-17"
+      },
+      "esperado": {
+        "empresa": "Restaurante Sabor da Serra LTDA",
+        "cnpj": "88.496.965/0001-68",
+        "valor_total": 1556.62,
+        "data_emissao": "2026-04-05",
+        "data_vencimento": "2026-05-17"
+      }
+    },
+    "nota_08.pdf": {
+      "lido": {
+        "empresa": "Tech Suporte Informática LTDA",
+        "cnpj": "69.166.978/0001-24",
+        "valor_total": 1316.28,
+        "data_emissao": "2026-05-18",
+        "data_vencimento": "2026-06-28"
+      },
+      "esperado": {
+        "empresa": "Tech Suporte Informática LTDA",
+        "cnpj": "69.166.978/0001-24",
+        "valor_total": 1316.28,
+        "data_emissao": "2026-05-18",
+        "data_vencimento": "2026-06-28"
+      }
+    },
+    "nota_09.pdf": {
+      "lido": {
+        "empresa": "Floricultura Primavera ME",
+        "cnpj": "51.462.704/0001-17",
+        "valor_total": 2195.88,
+        "data_emissao": "2026-09-25",
+        "data_vencimento": "2026-10-06"
+      },
+      "esperado": {
+        "empresa": "Floricultura Primavera ME",
+        "cnpj": "51.462.704/0001-17",
+        "valor_total": 2195.88,
+        "data_emissao": "2026-09-25",
+        "data_vencimento": "2026-10-06"
+      }
+    },
+    "nota_10.pdf": {
+      "lido": {
+        "empresa": "Transportadora Rota Norte LTDA",
+        "cnpj": "80.957.015/0001-81",
+        "valor_total": 833.48,
+        "data_emissao": "2026-05-08",
+        "data_vencimento": "2026-06-02"
+      },
+      "esperado": {
+        "empresa": "Transportadora Rota Norte LTDA",
+        "cnpj": "80.957.015/0001-81",
+        "valor_total": 833.48,
+        "data_emissao": "2026-05-08",
+        "data_vencimento": "2026-06-02"
+      }
+    },
+    "nota_11.pdf": {
+      "lido": {
+        "empresa": "Escola de Idiomas Novo Mundo S/S",
+        "cnpj": "82.278.248/0001-83",
+        "valor_total": 2075.14,
+        "data_emissao": "2026-10-14",
+        "data_vencimento": "2026-11-07"
+      },
+      "esperado": {
+        "empresa": "Escola de Idiomas Novo Mundo S/S",
+        "cnpj": "82.278.248/0001-83",
+        "valor_total": 2075.14,
+        "data_emissao": "2026-10-14",
+        "data_vencimento": "2026-11-07"
+      }
+    },
+    "nota_12.pdf": {
+      "lido": {
+        "empresa": "Lavanderia Brisa Limpa ME",
+        "cnpj": "31.509.839/0001-83",
+        "valor_total": 2079.11,
+        "data_emissao": "2026-04-01",
+        "data_vencimento": "2026-05-03"
+      },
+      "esperado": {
+        "empresa": "Lavanderia Brisa Limpa ME",
+        "cnpj": "31.509.839/0001-83",
+        "valor_total": 2079.11,
+        "data_emissao": "2026-04-01",
+        "data_vencimento": "2026-05-03"
+      }
+    }
+  }
+}

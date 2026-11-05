@@ -1,0 +1,17 @@
+# Blueprint do Render (https://render.com). Crie com: New > Blueprint > aponte para o repositório.
+services:
+  - type: web
+    name: leitor-notas
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 app.py
+    healthCheckPath: /api/config
+    envVars:
+      - { key: MOTOR, value: gemini }
+      - { key: MODO_DEMO, value: "1" }
+      - { key: CONFIAR_PROXY, value: "1" }
+      - { key: HOST, value: 0.0.0.0 }
+      - { key: GEMINI_MODELO, value: gemini-2.5-flash }
+      - { key: GEMINI_API_KEY, sync: false }   # você digita no painel do Render; nunca vai para o Git
+      - { key: DATABASE_URL, sync: false }     # string de conexão do Postgres (Supabase)

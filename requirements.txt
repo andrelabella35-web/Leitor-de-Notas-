@@ -1,0 +1,2 @@
+# Só necessário em produção (Postgres). Localmente com SQLite o projeto não precisa de nada além da biblioteca padrão.
+psycopg[binary]>=3.1

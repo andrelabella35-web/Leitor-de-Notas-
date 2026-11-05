@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leitor de Notas Fiscais</title>
+<style>
+body{font:16px system-ui,sans-serif;max-width:980px;margin:2rem auto;padding:0 1rem;color:#222}
+#drop{border:2px dashed #888;border-radius:10px;padding:2rem;text-align:center;cursor:pointer}
+#drop.over{background:#eef}
+#aviso{background:#fff7e0;border:1px solid #e6c200;border-radius:8px;padding:.7rem 1rem;margin-bottom:1rem}
+#status{margin:1rem 0;min-height:1.5em}.erro{color:#b00020}
+#amostras button{margin:.2rem;padding:.3rem .7rem;cursor:pointer}
+.tabela{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.4rem;border-bottom:1px solid #ddd;white-space:nowrap}
+td.v{text-align:right}small{color:#666}
+</style></head><body>
+<h1>Leitor de Notas Fiscais</h1>
+<div id="aviso" hidden><b>Demo público.</b> Use as notas fictícias abaixo. <b>Não envie notas fiscais reais</b>: o PDF é
+ processado por uma API de IA gratuita de terceiros. Suas notas ficam visíveis só para você e são apagadas em até 24 h.</div>
+<div id="drop">Arraste um PDF aqui ou clique para escolher<input id="f" type="file" accept="application/pdf" hidden></div>
+<p id="amostras"><small>Ou teste com uma nota fictícia:</small> </p>
+<div id="status"></div>
+<div class="tabela"><table><thead><tr><th>#</th><th>Empresa</th><th>CNPJ</th><th>Emissão</th><th>Vencimento</th><th class="v">Total</th></tr></thead><tbody id="t"></tbody></table></div>
+<p><small id="rodape"></small></p>
+<script>
+const $=id=>document.getElementById(id),st=$('status'),brl=v=>v==null?'—':Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dt=d=>d?String(d).slice(0,10).split('-').reverse().join('/'):'—';
+let busy=false;
+async function load(){const r=await (await fetch('/api/notas')).json();
+ $('t').replaceChildren(...r.map(n=>{const tr=document.createElement('tr');
+  [n.id,n.empresa??'—',n.cnpj??'—',dt(n.data_emissao),dt(n.data_vencimento),brl(n.valor_total)].forEach((x,i)=>{const td=document.createElement('td');td.textContent=x;if(i==5)td.className='v';tr.append(td)});return tr}))}
+async function send(file){
+ if(!file||busy)return; busy=true; st.className='';st.textContent='Lendo a nota com a IA…';
+ try{const r=await fetch('/api/upload',{method:'POST',headers:{'X-Filename':encodeURIComponent(file.name)},body:file});
+  const j=await r.json(); if(!r.ok)throw new Error(j.erro);
+  st.textContent=`Salvo: ${j.empresa??'?'} · ${j.cnpj??'sem CNPJ'} · emissão ${dt(j.data_emissao)} · venc. ${dt(j.data_vencimento)} · ${brl(j.valor_total)}`;load();
+ }catch(e){st.className='erro';st.textContent=e.message}finally{busy=false}}
+$('drop').onclick=()=>$('f').click();$('f').onchange=e=>send(e.target.files[0]);
+$('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('over')};
+$('drop').ondragleave=()=>$('drop').classList.remove('over');
+$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');send(e.dataTransfer.files[0])};
+(async()=>{
+ const c=await (await fetch('/api/config')).json(); $('aviso').hidden=!c.demo;
+ $('rodape').textContent=`Motor de leitura: ${c.motor} (${c.modelo}) · limite ${c.max_mb} MB por PDF`;
+ for(const nome of await (await fetch('/api/amostras')).json()){
+  const b=document.createElement('button');b.textContent=nome.replace('nota_','').replace('.pdf','');b.title=nome;
+  b.onclick=async()=>send(new File([await (await fetch('/amostras/'+nome)).blob()],nome,{type:'application/pdf'}));
+  $('amostras').append(b)}
+ load();
+})();
+</script></body></html>
