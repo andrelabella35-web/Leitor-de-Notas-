@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Leitor de notas fiscais: PDF -> IA de visão (Ollama local ou Gemini) -> SQL (SQLite ou Postgres).
+"""Leitor de notas fiscais: PDF -> IA de visão (Google Gemini) -> SQL (SQLite ou Postgres).
 
 Uso local:  python3 app.py            (http://localhost:8000)
 Produção:   veja README.md (variáveis de ambiente em config.py)
@@ -76,8 +76,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/":
             self._enviar(200, (config.BASE / "static/index.html").read_bytes(), "text/html; charset=utf-8", self._cookie_novo())
         elif self.path == "/api/config":
-            self._json({"demo": config.MODO_DEMO, "motor": config.MOTOR, "modelo": motores.nome_modelo(),
-                        "max_mb": config.MAX_PDF_MB})
+            self._json({"demo": config.MODO_DEMO, "modelo": motores.nome_modelo(), "max_mb": config.MAX_PDF_MB})
         elif self.path == "/api/amostras":
             self._json(sorted(p.name for p in (config.BASE / "samples").glob("nota_[0-9][0-9].pdf")))
         elif (m := AMOSTRA.match(self.path)) and (config.BASE / "samples" / m.group(1)).is_file():
@@ -135,7 +134,7 @@ def main():
     if config.RETENCAO_HORAS:
         threading.Thread(target=_faxina, daemon=True).start()
     print(f"Leitor de notas em http://{config.HOST}:{config.PORT}  "
-          f"(motor={config.MOTOR}/{motores.nome_modelo()}, banco={'postgres' if config.DATABASE_URL else 'sqlite'}, "
+          f"(modelo={motores.nome_modelo()}, banco={'postgres' if config.DATABASE_URL else 'sqlite'}, "
           f"demo={config.MODO_DEMO})", flush=True)
     ThreadingHTTPServer((config.HOST, config.PORT), Handler).serve_forever()
 

@@ -54,7 +54,7 @@ class GeminiTest(unittest.TestCase):
 
     def setUp(self):
         Falso.status = 200
-        for k, v in (("MOTOR", "gemini"), ("GEMINI_URL", self.url), ("GEMINI_API_KEY", "chave-teste"), ("GEMINI_MODELO", "m-teste")):
+        for k, v in (("GEMINI_URL", self.url), ("GEMINI_API_KEY", "chave-teste"), ("GEMINI_MODELO", "m-teste")):
             p = mock.patch.object(config, k, v)
             p.start()
             self.addCleanup(p.stop)
@@ -86,9 +86,6 @@ class GeminiTest(unittest.TestCase):
             motores.extrair(b"%PDF-x")
         self.assertEqual(c.exception.status, 502)
 
-    def test_motor_invalido(self):
-        with mock.patch.object(config, "MOTOR", "xyz"), self.assertRaises(motores.ErroMotor):
-            motores.extrair(b"%PDF-x")
 
 
 class ApiTest(unittest.TestCase):

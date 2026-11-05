@@ -2,7 +2,7 @@
 """Mede a acurácia por campo rodando o pipeline real (PDF -> IA) nas notas de samples/.
 
 Uso: python3 scripts/avaliar.py [N]   (N = quantas notas avaliar; padrão: todas)
-Não grava no banco. Cada nota leva ~1-3 min em CPU.
+Não grava no banco. Usa a cota da API: GEMINI_API_KEY precisa estar definida.
 """
 import json
 import sys
@@ -10,7 +10,6 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import config  # noqa: E402
 import motores  # noqa: E402
 from dados import normalizar  # noqa: E402
 
@@ -35,7 +34,7 @@ def main():
     for nome in nomes:
         t = time.time()
         pdf = (pasta / nome).read_bytes()
-        for tentativa in range(3):  # o Ollama pode ser reiniciado pelo sistema (OOM)
+        for tentativa in range(3):  # a API pode falhar de forma transitória (cota por minuto)
             try:
                 bruto = motores.extrair(pdf)
                 break

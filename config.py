@@ -9,11 +9,7 @@ def _flag(nome: str) -> bool:
     return os.getenv(nome, "0").strip().lower() in ("1", "true", "sim", "yes")
 
 
-# --- motor de leitura: "ollama" (local) ou "gemini" (nuvem) ---
-MOTOR = os.getenv("MOTOR", "ollama").strip().lower()
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODELO = os.getenv("OLLAMA_MODELO", "qwen2.5vl:3b")
-DPI = int(os.getenv("DPI", "100"))  # 150 dpi estourou a memória com 8 GB de RAM e sem GPU
+# --- IA de leitura: API do Google Gemini (plano gratuito) ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODELO = os.getenv("GEMINI_MODELO", "gemini-2.5-flash")  # confira os modelos gratuitos no AI Studio
 GEMINI_URL = os.getenv("GEMINI_URL", "https://generativelanguage.googleapis.com/v1beta")

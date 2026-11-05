@@ -38,7 +38,7 @@ $('drop').ondragleave=()=>$('drop').classList.remove('over');
 $('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');send(e.dataTransfer.files[0])};
 (async()=>{
  const c=await (await fetch('/api/config')).json(); $('aviso').hidden=!c.demo;
- $('rodape').textContent=`Motor de leitura: ${c.motor} (${c.modelo}) · limite ${c.max_mb} MB por PDF`;
+ $('rodape').textContent=`Leitura por IA: ${c.modelo} · limite ${c.max_mb} MB por PDF`;
  for(const nome of await (await fetch('/api/amostras')).json()){
   const b=document.createElement('button');b.textContent=nome.replace('nota_','').replace('.pdf','');b.title=nome;
   b.onclick=async()=>send(new File([await (await fetch('/amostras/'+nome)).blob()],nome,{type:'application/pdf'}));
