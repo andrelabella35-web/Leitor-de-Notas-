@@ -26,8 +26,8 @@ def abrir(dados):
 class ExportarTest(unittest.TestCase):
     def test_estrutura_e_ordem(self):
         linhas = abrir(exportar.gerar_xlsx(NOTAS)).findall(".//m:row", NS)
-        self.assertEqual(len(linhas), 3)  # cabeçalho + 2 notas
-        ids = [l.find("m:c[@r='A%s']/m:v" % l.get("r"), NS) for l in linhas[1:]]
+        self.assertEqual(len(linhas), 4)  # cabeçalho + 2 notas + total
+        ids = [l.find("m:c[@r='A%s']/m:v" % l.get("r"), NS) for l in linhas[1:3]]
         self.assertEqual([i.text for i in ids], ["1", "2"])  # mais antigas primeiro
 
     def test_valores_numericos_e_datas(self):
@@ -50,7 +50,27 @@ class ExportarTest(unittest.TestCase):
         self.assertIsNone(l3.find("m:c[@r='F3']", NS))
 
     def test_sem_notas(self):
-        self.assertEqual(len(abrir(exportar.gerar_xlsx([])).findall(".//m:row", NS)), 1)
+        linhas = abrir(exportar.gerar_xlsx([])).findall(".//m:row", NS)
+        self.assertEqual(len(linhas), 2)  # cabeçalho + total
+        self.assertEqual(linhas[1].find("m:c[@r='F2']/m:v", NS).text, "0")
+
+    def test_linha_de_total(self):
+        folha = abrir(exportar.gerar_xlsx(NOTAS))
+        self.assertEqual(len(folha.findall(".//m:row", NS)), 4)  # cabeçalho + 2 notas + total
+        self.assertEqual(folha.find(".//m:c[@r='E4']//m:t", NS).text, "Total")
+        f = folha.find(".//m:c[@r='F4']", NS)
+        self.assertEqual(f.find("m:f", NS).text, "SUM(F2:F3)")
+        self.assertEqual(f.find("m:v", NS).text, "1287.4")  # valor nulo não entra na soma
+        self.assertEqual(folha.find("m:autoFilter", NS).get("ref"), "A1:G3")  # filtro não inclui o total
+
+    def test_filtrar_periodo(self):
+        f = exportar.filtrar_periodo
+        self.assertEqual(f(NOTAS, None, None), NOTAS)
+        self.assertEqual([n["id"] for n in f(NOTAS, "2026-01-01", "2026-01-31")], [1])  # inclusivo
+        self.assertEqual([n["id"] for n in f(NOTAS, "2026-02-01", None)], [2])
+        self.assertEqual([n["id"] for n in f(NOTAS, None, "2026-12-31")], [2, 1])
+        self.assertEqual(f(NOTAS, "2027-01-01", None), [])
+        self.assertEqual(f([{"id": 9, "data_emissao": None}], "2026-01-01", None), [])
 
 
 if __name__ == "__main__":

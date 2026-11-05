@@ -20,7 +20,7 @@ COLUNAS = [  # (título, chave, tipo, largura)
 ]
 _PROIBIDOS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f￾￿]")  # inválidos em XML 1.0
 
-# estilos: 0 normal, 1 cabeçalho, 2 data, 3 moeda
+# estilos: 0 normal, 1 cabeçalho, 2 data, 3 moeda, 4 total (moeda em negrito), 5 rótulo do total
 _ESTILOS = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;R$&quot; #,##0.00"/></numFmts>
@@ -29,11 +29,13 @@ _ESTILOS = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <fill><patternFill patternType="solid"><fgColor rgb="FFDDEBF7"/></patternFill></fill></fills>
 <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="4">
+<cellXfs count="6">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>
 <xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>
 <xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>
+<xf numFmtId="164" fontId="1" fillId="2" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>
 </cellXfs></styleSheet>"""
 
 _RAIZ = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -86,20 +88,37 @@ def _celula(ref: str, valor, tipo: str) -> str:
     return f'<c r="{ref}"><v>{int(valor)}</v></c>'
 
 
+def filtrar_periodo(notas: list[dict], de: str | None, ate: str | None) -> list[dict]:
+    """Mantém as notas com data de emissão entre `de` e `ate` (AAAA-MM-DD, inclusive).
+    Com filtro ativo, notas sem data de emissão ficam de fora."""
+    if not de and not ate:
+        return notas
+    return [n for n in notas
+            if n.get("data_emissao") and (not de or str(n["data_emissao"])[:10] >= de)
+            and (not ate or str(n["data_emissao"])[:10] <= ate)]
+
+
 def gerar_xlsx(notas: list[dict]) -> bytes:
-    """Recebe a lista de `banco.listar()` e devolve os bytes do .xlsx (mais antigas primeiro)."""
+    """Recebe a lista de `banco.listar()` e devolve os bytes do .xlsx (mais antigas primeiro).
+    A última linha traz o total (fórmula SUM, que o Excel recalcula se você editar valores)."""
     linhas = ['<row r="1">' + "".join(_texto(f"{_col(i)}1", t, 1) for i, (t, *_r) in enumerate(COLUNAS)) + "</row>"]
     for n, nota in enumerate(reversed(notas), start=2):
         cels = "".join(_celula(f"{_col(i)}{n}", nota.get(chave), tipo) for i, (_t, chave, tipo, _w) in enumerate(COLUNAS))
         linhas.append(f'<row r="{n}">{cels}</row>')
     ultima = _col(len(COLUNAS) - 1)
+    fim = len(notas) + 1  # última linha de dados
+    icol = next(i for i, c in enumerate(COLUNAS) if c[2] == "m")
+    soma = sum(float(n["valor_total"]) for n in notas if n.get("valor_total") is not None)
+    rot = _texto(f"{_col(icol - 1)}{fim + 1}", "Total", 5)
+    tot = f'<c r="{_col(icol)}{fim + 1}" s="4"><f>SUM({_col(icol)}2:{_col(icol)}{fim})</f><v>{round(soma, 2)!r}</v></c>'
+    linhas.append(f'<row r="{fim + 1}">{rot}{tot}</row>')
     larguras = "".join(f'<col min="{i + 1}" max="{i + 1}" width="{c[3]}" customWidth="1"/>' for i, c in enumerate(COLUNAS))
     folha = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
         '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
         f"<cols>{larguras}</cols><sheetData>{''.join(linhas)}</sheetData>"
-        f'<autoFilter ref="A1:{ultima}{max(len(notas) + 1, 1)}"/></worksheet>'
+        f'<autoFilter ref="A1:{ultima}{max(fim, 1)}"/></worksheet>'
     )
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:

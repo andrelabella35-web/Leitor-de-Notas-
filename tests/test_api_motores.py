@@ -1,7 +1,9 @@
+import io
 import json
 import tempfile
 import threading
 import unittest
+import zipfile
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -203,3 +205,16 @@ class ApiTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_xlsx_com_periodo_e_validacao(self):
+        _, _, h = self.req("/api/upload", b"%PDF-1.4 x")  # emissão 2026-11-03
+        c = h["Set-Cookie"].split(";")[0]
+        for caminho, linhas in (("/api/notas.xlsx", 3), ("/api/notas.xlsx?de=2026-11-01&ate=2026-11-30", 3),
+                                ("/api/notas.xlsx?de=2027-01-01", 2), ("/api/notas.xlsx?de=&ate=", 3)):
+            status, corpo, hh = self.req(caminho, cookie=c)
+            self.assertEqual(status, 200, caminho)
+            self.assertIn("attachment", hh["Content-Disposition"])
+            z = zipfile.ZipFile(io.BytesIO(corpo))
+            self.assertEqual(z.read("xl/worksheets/sheet1.xml").count(b"<row "), linhas, caminho)
+        for ruim in ("?de=ontem", "?ate=2026-13-01", "?de=2026-12-01&ate=2026-01-01"):
+            self.assertEqual(self.req("/api/notas.xlsx" + ruim, cookie=c)[0], 400, ruim)

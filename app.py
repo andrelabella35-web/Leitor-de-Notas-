@@ -11,7 +11,8 @@ import threading
 import time
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import unquote
+from datetime import date
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import banco
 import config
@@ -84,8 +85,18 @@ class Handler(BaseHTTPRequestHandler):
             self._enviar(200, (config.BASE / "samples" / m.group(1)).read_bytes(), "application/pdf")
         elif self.path == "/api/notas":
             self._json(banco.listar(sid if config.MODO_DEMO else None))
-        elif self.path == "/api/notas.xlsx":
-            xlsx = exportar.gerar_xlsx(banco.listar(sid if config.MODO_DEMO else None))
+        elif urlsplit(self.path).path == "/api/notas.xlsx":
+            q = parse_qs(urlsplit(self.path).query)
+            try:  # período opcional, pela data de emissão: ?de=AAAA-MM-DD&ate=AAAA-MM-DD
+                de, ate = (q[k][0] if q.get(k) and q[k][0] else None for k in ("de", "ate"))
+                for v in (de, ate):
+                    if v:
+                        date.fromisoformat(v)
+            except ValueError:
+                return self._json({"erro": "período inválido: use datas AAAA-MM-DD"}, 400)
+            if de and ate and de > ate:
+                return self._json({"erro": "a data inicial é maior que a final"}, 400)
+            xlsx = exportar.gerar_xlsx(exportar.filtrar_periodo(banco.listar(sid if config.MODO_DEMO else None), de, ate))
             self._enviar(200, xlsx, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                          (("Content-Disposition", 'attachment; filename="notas.xlsx"'),) + tuple(self._cookie_novo()))
         else:

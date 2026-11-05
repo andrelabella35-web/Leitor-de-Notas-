@@ -17,7 +17,9 @@ td.v{text-align:right}small{color:#666}
 <div id="drop">Arraste um PDF aqui ou clique para escolher<input id="f" type="file" accept="application/pdf" hidden></div>
 <p id="amostras"><small>Ou teste com uma nota fictícia:</small> </p>
 <div id="status"></div>
-<p><a id="xlsx" href="/api/notas.xlsx" download="notas.xlsx"><button type="button">Baixar planilha Excel (.xlsx)</button></a></p>
+<p id="export"><small>Emissão de</small> <input type="date" id="de"> <small>até</small> <input type="date" id="ate">
+ <a id="xlsx" href="/api/notas.xlsx" download="notas.xlsx"><button type="button">Baixar planilha Excel (.xlsx)</button></a>
+ <small>(sem datas = todas as notas)</small></p>
 <div class="tabela"><table><thead><tr><th>#</th><th>Empresa</th><th>CNPJ</th><th>Emissão</th><th>Vencimento</th><th class="v">Total</th></tr></thead><tbody id="t"></tbody></table></div>
 <p><small id="rodape"></small></p>
 <script>
@@ -33,6 +35,8 @@ async function send(file){
   const j=await r.json(); if(!r.ok)throw new Error(j.erro);
   st.textContent=`Salvo: ${j.empresa??'?'} · ${j.cnpj??'sem CNPJ'} · emissão ${dt(j.data_emissao)} · venc. ${dt(j.data_vencimento)} · ${brl(j.valor_total)}`;load();
  }catch(e){st.className='erro';st.textContent=e.message}finally{busy=false}}
+const link=()=>{const q=new URLSearchParams();if($('de').value)q.set('de',$('de').value);if($('ate').value)q.set('ate',$('ate').value);
+ $('xlsx').href='/api/notas.xlsx'+(q.toString()?'?'+q:'')};$('de').onchange=$('ate').onchange=link;
 $('drop').onclick=()=>$('f').click();$('f').onchange=e=>send(e.target.files[0]);
 $('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('over')};
 $('drop').ondragleave=()=>$('drop').classList.remove('over');
