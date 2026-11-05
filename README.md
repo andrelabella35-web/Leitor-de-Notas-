@@ -67,7 +67,7 @@ python3 -m unittest discover -s tests
 | Variável | Padrão | Função |
 |---|---|---|
 | `GEMINI_API_KEY` | — | chave da API (obrigatória) |
-| `GEMINI_MODELO` | `gemini-2.5-flash` | modelo usado |
+| `GEMINI_MODELO` | `gemini-3.1-flash-lite` | modelo usado |
 | `DATABASE_URL` | vazio (SQLite) | Postgres |
 | `MODO_DEMO` | `0` | isola visitantes, não guarda resposta bruta, apaga dados antigos, ativa limites |
 | `LIMITE_IP_HORA`, `LIMITE_DIA` | `5`, `150` no demo | limites de uso (0 = sem limite) |
@@ -88,7 +88,17 @@ python3 scripts/gerar_amostras.py   # gera 12 notas FICTÍCIAS + gabarito em sam
 GEMINI_API_KEY=... python3 scripts/avaliar.py   # acurácia por campo; grava samples/resultado_avaliacao.json
 ```
 
-> Ainda não medida com o Gemini. Rode o script e registre aqui o resultado. As notas de exemplo são sintéticas, com texto limpo: o resultado em notas reais tende a ser pior.
+Resultado com `gemini-3.1-flash-lite` em **12 notas fictícias** (3 layouts diferentes, 1 a 4 s por nota):
+
+| Campo | Acertos |
+|---|---|
+| empresa | 12/12 (100%) |
+| cnpj | 12/12 (100%) |
+| valor_total | 12/12 (100%) |
+| data_emissao | 12/12 (100%) |
+| data_vencimento | 12/12 (100%) |
+
+> **Atenção:** são notas sintéticas, com texto limpo e rótulos claros — o melhor cenário possível. Em notas reais (escaneadas, com ruído, layouts densos) o resultado tende a ser pior. Gabarito em `samples/gabarito.json`, resultado detalhado em `samples/resultado_avaliacao.json`.
 
 ## Decisões técnicas
 

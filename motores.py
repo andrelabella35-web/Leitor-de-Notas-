@@ -1,6 +1,7 @@
 """Leitura da nota via API do Google Gemini: PDF -> texto JSON bruto."""
 import base64
 import json
+import time
 import urllib.error
 import urllib.request
 
@@ -42,15 +43,25 @@ def extrair(pdf: bytes) -> str:
         url, json.dumps(corpo).encode(),
         {"Content-Type": "application/json", "x-goog-api-key": config.GEMINI_API_KEY},  # chave no header, nunca na URL
     )
-    try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            j = json.load(r)
-    except urllib.error.HTTPError as e:  # nunca repassar o corpo/URL: pode conter detalhes da conta
+    for tentativa in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                j = json.load(r)
+            break
+        except urllib.error.HTTPError as e:
+            if e.code == 503 and tentativa < 2:  # modelo sobrecarregado: transitório, tenta de novo
+                time.sleep(2 * (tentativa + 1))
+                continue
+            erro_http = e
+            j = None
+            break
+        except OSError as e:
+            raise ErroMotor(f"API de IA indisponível: {type(e).__name__}", 502)
+    if j is None:  # nunca repassar o corpo/URL: pode conter detalhes da conta
+        e = erro_http
         if e.code == 429:
             raise ErroMotor("Limite gratuito da API de IA atingido. Tente novamente em alguns minutos.", 429)
         raise ErroMotor(f"A API de IA recusou a requisição (HTTP {e.code})", 502)
-    except OSError as e:
-        raise ErroMotor(f"API de IA indisponível: {type(e).__name__}", 502)
     try:
         return j["candidates"][0]["content"]["parts"][0]["text"]
     except (KeyError, IndexError, TypeError):

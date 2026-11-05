@@ -11,6 +11,6 @@ services:
       - { key: MODO_DEMO, value: "1" }
       - { key: CONFIAR_PROXY, value: "1" }
       - { key: HOST, value: 0.0.0.0 }
-      - { key: GEMINI_MODELO, value: gemini-2.5-flash }
+      - { key: GEMINI_MODELO, value: gemini-3.1-flash-lite }
       - { key: GEMINI_API_KEY, sync: false }   # você digita no painel do Render; nunca vai para o Git
       - { key: DATABASE_URL, sync: false }     # string de conexão do Postgres (Supabase)

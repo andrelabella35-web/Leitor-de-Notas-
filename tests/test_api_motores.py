@@ -80,6 +80,23 @@ class GeminiTest(unittest.TestCase):
         self.assertEqual(c.exception.status, 429)
         self.assertNotIn("segredo", str(c.exception))
 
+    def test_503_tenta_de_novo_e_depois_funciona(self):
+        respostas = iter([503, 200])
+        original = Falso.do_POST
+
+        def alterna(h):
+            Falso.status = next(respostas)
+            original(h)
+        with mock.patch.object(Falso, "do_POST", alterna), mock.patch("time.sleep") as dorme:
+            self.assertEqual(json.loads(motores.extrair(b"%PDF-x"))["empresa"], "ACME")
+        dorme.assert_called_once()
+
+    def test_503_persistente_desiste(self):
+        Falso.status = 503
+        with mock.patch("time.sleep"), self.assertRaises(motores.ErroMotor) as c:
+            motores.extrair(b"%PDF-x")
+        self.assertEqual(c.exception.status, 502)
+
     def test_outro_erro_http(self):
         Falso.status = 500
         with self.assertRaises(motores.ErroMotor) as c:

@@ -11,7 +11,7 @@ def _flag(nome: str) -> bool:
 
 # --- IA de leitura: API do Google Gemini (plano gratuito) ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODELO = os.getenv("GEMINI_MODELO", "gemini-2.5-flash")  # confira os modelos gratuitos no AI Studio
+GEMINI_MODELO = os.getenv("GEMINI_MODELO", "gemini-3.1-flash-lite")  # confira os modelos gratuitos no AI Studio
 GEMINI_URL = os.getenv("GEMINI_URL", "https://generativelanguage.googleapis.com/v1beta")
 
 # --- banco: SQLite por padrão; Postgres se DATABASE_URL estiver definida ---
