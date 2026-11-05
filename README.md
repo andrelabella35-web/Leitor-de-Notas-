@@ -4,6 +4,8 @@ Aplicação web que recebe uma nota fiscal em **PDF**, usa **IA de visão** (API
 
 **Demo online:** https://leitor-notas-k2en.onrender.com — use os botões de nota fictícia. O plano gratuito "dorme" após 15 min sem uso; o primeiro acesso pode levar cerca de 1 minuto.
 
+![Tela do leitor de notas com duas notas fictícias lidas pela IA](docs/demo.png)
+
 Campos extraídos: **empresa emitente, CNPJ, valor total, data de emissão e data de vencimento.**
 
 ## Como funciona
